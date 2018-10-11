@@ -6,9 +6,10 @@ from cmdb import models
 import json
 import os
 import csv
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
 from decimal import Decimal
 from django.http import HttpResponse
-
 def login(request):
     if request.method == 'POST':
         ret = {'code': 1000, 'msg': '成功登陆'}
@@ -70,19 +71,41 @@ def search(request):
         #     return JsonResponse(test)
         # return JsonResponse(test)
         res = data['input']
-        blogs = models.Show.objects.filter(name=res)
+        blogs = models.Show.objects.filter(name__contains=res)
+        #res1 = []
+        #for a in blogs:
+            #print(a.name)
+        #预留一列记录查询次数
+        # # obj = models.Show.objects.get(name=res)
+        #     hit = obj.hit
+        #     hit += 1
+        #     models.Show.objects.filter(name=res).update(hit=hit)
         if blogs:
-            obj = models.Show.objects.get(name=res)
-            hit = obj.hit
-            hit += 1
-            models.Show.objects.filter(name=res).update(hit=hit)
-        res1={}
-        for a in blogs:
-            res1['name']=a.name
-            res1['shopname']=a.shopname
-            res1['price']=a.price
-            res1['pinglun']=a.pinglun
-        return JsonResponse(res1)
+            res1 = []
+            for a in blogs:
+                #res1.append(a.name)
+                #res2.append(a.shopname)
+                res1.append({
+                    'name': a.name,
+                    'shopname':a.shopname,
+                    'price':a.price,
+                    'pinglun':a.pinglun
+                })
+            # json.loads(res1)
+            # name_json={}
+            # name_json=dict(zip(res1,res2))
+            return JsonResponse(res1, safe=False)
+            #必须要加这个safe 要不他认为你这个json不安全
+            ###############################################
+        #res1={}
+        # for a in blogs:
+        #     res1['name']=a.name
+        #     res1['shopname']=a.shopname
+        #     res1['price']=a.price
+        #     res1['pinglun']=a.pinglun
+        # print(res1)
+        # return JsonResponse(res1)
+            ##############################################
             # res2.append(res1)
         # return HttpResponse(json.dumps(res1),content_type="application/json")
         # if blogs:
@@ -91,7 +114,31 @@ def search(request):
         #     hit += 1
         #     models.Show.objects.filter(name=res).update(hit=hit)
         #     return JsonResponse(test)
-
+def searchtrue(request):
+    if request.method=='POST':
+        datalist = request.body.decode('utf-8')
+        data = json.loads(datalist)
+        res = data['searchthing']
+        #print(type(res[0]))
+        res2=res[0].strip()
+        print(res2)
+        blogs = models.Show.objects.filter(name=res2)
+        #error={'code':100}
+        print(blogs)
+        if blogs:
+            obj = models.Show.objects.get(name=res2)
+            hit = obj.hit
+            hit += 1
+            models.Show.objects.filter(name=res2).update(hit=hit)
+        res1={}
+        for a in blogs:
+            res1['name']=a.name
+            res1['shopname']=a.shopname
+            res1['price']=a.price
+            res1['pinglun']=a.pinglun
+        print(res1)
+        return JsonResponse(res1)
+        #return JsonResponse(error)
 def Hcharts(request):
     if request.method == 'GET':
         name_list = []
