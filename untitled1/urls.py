@@ -21,10 +21,10 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/auth', views.login),
     path('api/auth/register', views.register),
-    path('api/auth/upload',views.MySQL),
-    path('api/auth/search',views.search),
-    path('api/auth/hcharts',views.Hcharts),
-    path('api/auth/hcharts1',views.Hcharts1),
-    path('api/auth/hcharts2',views.Hcharts2),
-    path('api/auth/searchtrue',views.searchtrue)
+    path('api/auth/upload', views.MySQL),
+    path('api/auth/search', views.search),
+    path('api/auth/hcharts', views.Hcharts),
+    path('api/auth/hcharts1', views.Hcharts1),
+    path('api/auth/hcharts2', views.Hcharts2),
+    path('api/auth/searchtrue', views.searchtrue)
 ]
