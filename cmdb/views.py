@@ -13,6 +13,7 @@ from django.http import HttpResponse
 
 def login(request):
     if request.method == 'POST':
+        userinfo = []
         ret = {'code': 1000, 'msg': '成功登陆'}
         try:
             datalist = request.body.decode('utf-8')
@@ -26,6 +27,17 @@ def login(request):
             if obj:
                 for a in obj:
                     ret['role'] = a.role
+                    if a.role == 'admin':
+                        allobj = models.UserInfo.objects.all()
+                        for b in allobj:
+                            userinfo.append({
+                                'username': b.username,
+                                'tel': b.tel,
+                                'role': b.role
+                            })
+                        ret['userdata'] = userinfo
+                    else:
+                        ret['userdata'] = []
             else:
                 ret['code'] = 1001
                 ret['msg'] = '用户名或密码错误'
