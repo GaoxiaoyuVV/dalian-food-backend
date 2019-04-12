@@ -16,6 +16,7 @@ def login(request):
         userinfo = []
         ret = {'code': 1000, 'msg': '成功登陆'}
         try:
+            #通用方法来获取API中返回的数据，并将其封装成安全的形式
             datalist = request.body.decode('utf-8')
             data = json.loads(datalist)
             username = data['username']
@@ -86,6 +87,7 @@ def search(request):
     if request.method == "POST":
         datalist = request.body.decode('utf-8')
         data = json.loads(datalist)
+        res1 = []
         # if data["input"]=="gaoxiaoyu":
         #     test['accept']=100
         #     return JsonResponse(test)
@@ -101,7 +103,6 @@ def search(request):
         #     hit += 1
         #     models.Show.objects.filter(name=res).update(hit=hit)
         if blogs:
-            res1 = []
             for a in blogs:
                 # res1.append(a.name)
                 # res2.append(a.shopname)
@@ -111,11 +112,16 @@ def search(request):
                     'price': a.price,
                     'pinglun': a.pinglun
                 })
+        else:
+            res1.append({
+                'status': 'fail',
+                'meta': ''
+            })
             # json.loads(res1)
             # name_json={}
             # name_json=dict(zip(res1,res2))
-            return JsonResponse(res1, safe=False)
-            # 必须要加这个safe 要不他认为你这个json不安全
+        return JsonResponse(res1, safe=False)
+            # 将返回的json格式处理为安全的格式，不然restfulAPI会报错认为其不安全。
             ###############################################
         # res1={}
         # for a in blogs:
@@ -145,6 +151,27 @@ def userInfo(request):
                 models.UserInfo.objects.filter(username=data['username']).update(password=data['password'])
             if data['tel']:
                 models.UserInfo.objects.filter(username=data['username']).update(tel=data['tel'])
+        return JsonResponse(msg)
+def getUserInfo(request):
+    if request.method == 'GET':
+        user_list = []
+        temp = models.UserInfo.objects.all()
+        for a in temp:
+            user_list.append({
+                'username': a.username,
+                'password': a.password,
+                'tel': a.tel,
+                'role': a.role
+            })
+        return JsonResponse(user_list, safe=False)
+def delUserInfo(request):
+    if request.method == 'POST':
+        msg = {"message": "success"}
+        datalist = request.body.decode('utf-8')
+        data = json.loads(datalist)
+        if data['username']:
+            obj = models.UserInfo.objects.get(username=data['username'])
+            obj.delete()
         return JsonResponse(msg)
 def searchtrue(request):
     if request.method == 'POST':
@@ -189,7 +216,7 @@ def Hcharts1(request):
     if request.method == 'GET':
         name_list = []
         price_list = []
-        for a in models.Show.objects.order_by('-hit')[:5]:
+        for a in models.Show.objects.order_by('-price')[:5]:
             name_list.append(a.name)
             price_list.append(a.price)
         name_json = {}
@@ -202,7 +229,7 @@ def Hcharts2(request):
     if request.method == 'GET':
         name_list = []
         pinglun_list = []
-        for a in models.Show.objects.order_by('-hit')[:5]:
+        for a in models.Show.objects.order_by('-pinglun')[:5]:
             name_list.append(a.name)
             pinglun_list.append(a.pinglun)
         name_json = {}
