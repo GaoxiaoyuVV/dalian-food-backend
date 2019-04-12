@@ -135,7 +135,17 @@ def search(request):
         #     models.Show.objects.filter(name=res).update(hit=hit)
         #     return JsonResponse(test)
 
-
+def userInfo(request):
+    if request.method == 'POST':
+        msg = {"message": "success"}
+        datalist = request.body.decode('utf-8')
+        data = json.loads(datalist)
+        if data['username']:
+            if data['password']:
+                models.UserInfo.objects.filter(username=data['username']).update(password=data['password'])
+            if data['tel']:
+                models.UserInfo.objects.filter(username=data['username']).update(tel=data['tel'])
+        return JsonResponse(msg)
 def searchtrue(request):
     if request.method == 'POST':
         datalist = request.body.decode('utf-8')
@@ -161,7 +171,6 @@ def searchtrue(request):
         print(res1)
         return JsonResponse(res1)
         # return JsonResponse(error)
-
 
 def Hcharts(request):
     if request.method == 'GET':
