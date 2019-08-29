@@ -24,6 +24,7 @@ urlpatterns = [
     path('api/auth/upload', views.MySQL),
     path('api/auth/search', views.search),
     path('api/auth/userInfo', views.getUserInfo),
+    path('api/auth/updateUserInfo', views.userInfo),
     path('api/auth/delUserInfo', views.delUserInfo),
     path('api/auth/hcharts', views.Hcharts),
     path('api/auth/hcharts1', views.Hcharts1),

@@ -1,3 +1,4 @@
+# -- coding: utf-8 --
 from django.shortcuts import render
 from django.shortcuts import render
 from django.http import JsonResponse
@@ -68,11 +69,11 @@ def MySQL(request):
         if not myFile:
             msg["number"] = 20
             return JsonResponse(msg)
-        destination = open(os.path.join("C://Users/xiaoygao/PycharmProjects/untitled1", myFile.name), 'wb+')
+        destination = open(os.path.join("C://Users/xiaoygao/ownplace/dalian-food-backend", myFile.name), 'wb+')
         for chunk in myFile.chunks():  # 分块使用二进制的方式写入文件
             destination.write(chunk)
         destination.close()
-        with open(myFile.name, 'r') as csvfile:
+        with open(myFile.name, 'r', encoding='utf8') as csvfile:
             reader = csv.reader(csvfile)
             for row in reader:
                 models.Show.objects.create(name=row[0], shopname=row[1], price=row[2], pinglun=row[3])
@@ -146,6 +147,8 @@ def userInfo(request):
         msg = {"message": "success"}
         datalist = request.body.decode('utf-8')
         data = json.loads(datalist)
+        print("userInfo")
+        print(data)
         if data['username']:
             if data['password']:
                 models.UserInfo.objects.filter(username=data['username']).update(password=data['password'])
